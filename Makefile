@@ -1,4 +1,6 @@
 .PHONY: proto-format proto-lint proto-gen license
+all: proto-all format lint license
+
 #=============================================================================#
 #                                  Protobuf                                   #
 #=============================================================================#
@@ -40,3 +42,15 @@ license:
 	@echo "Adding license to files..."
 	@go-license --config .github/license.yaml $(FILES)
 	@echo "Completed license addition!"
+
+format:
+	@echo "==================================================================="
+	@echo "Running formatters..."
+	@go tool golangci-lint fmt -c ./.golangci.yaml
+	@echo "Completed formatting!"
+
+lint:
+	@echo "==================================================================="
+	@echo "Running linter..."
+	@go tool golangci-lint run -c ./.golangci.yaml
+	@echo "Completed linting!"
