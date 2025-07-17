@@ -33,9 +33,8 @@ import (
 	transferkeeper "github.com/cosmos/ibc-go/v8/modules/apps/transfer/keeper"
 	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
 
-	_ "embed"
-
 	_ "cosmossdk.io/x/upgrade"
+	_ "embed"
 	_ "github.com/circlefin/noble-cctp/x/cctp"
 	_ "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory"
 	_ "github.com/cosmos/cosmos-sdk/x/auth"
@@ -44,8 +43,8 @@ import (
 	_ "github.com/cosmos/cosmos-sdk/x/consensus"
 	_ "github.com/cosmos/cosmos-sdk/x/params"
 	_ "github.com/cosmos/cosmos-sdk/x/staking"
-	_ "template.dev" // import for side effects
 
+	_ "template.dev" // import for side effects
 	templatekeeper "template.dev/keeper"
 )
 
@@ -105,7 +104,9 @@ func AppConfig() depinject.Config {
 		depinject.Supply(
 			// supply custom module basics
 			map[string]module.AppModuleBasic{
-				genutiltypes.ModuleName: genutil.NewAppModuleBasic(genutiltypes.DefaultMessageValidator),
+				genutiltypes.ModuleName: genutil.NewAppModuleBasic(
+					genutiltypes.DefaultMessageValidator,
+				),
 			},
 		),
 	)

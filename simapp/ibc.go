@@ -64,7 +64,8 @@ func (app *SimApp) RegisterIBCModules() error {
 		app.StakingKeeper,
 		app.UpgradeKeeper,
 		scopedIBCKeeper,
-		// exchange flash debris claw calm shine laundry february cousin glad name miss jar neglect reflect blanket
+		// exchange flash debris claw calm shine laundry february cousin glad name miss jar neglect
+		// reflect blanket
 		// orbit clever educate rent inject lounge pupil plastic
 		"noble1h8tqx833l3t2s45mwxjz29r85dcevy93wk63za",
 	)
@@ -80,7 +81,8 @@ func (app *SimApp) RegisterIBCModules() error {
 		app.AccountKeeper,
 		app.BankKeeper,
 		scopedTransferKeeper,
-		// exchange flash debris claw calm shine laundry february cousin glad name miss jar neglect reflect blanket
+		// exchange flash debris claw calm shine laundry february cousin glad name miss jar neglect
+		// reflect blanket
 		// orbit clever educate rent inject lounge pupil plastic
 		"noble1h8tqx833l3t2s45mwxjz29r85dcevy93wk63za",
 	)

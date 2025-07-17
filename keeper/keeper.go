@@ -88,10 +88,10 @@ func NewKeeper(
 // Validate returns an error if any of the keeper fields is not valid.
 func (k *Keeper) Validate() error {
 	if k.logger == nil {
-		errors.New("logger cannot be nil")
+		return errors.New("logger cannot be nil")
 	}
 	if k.cdc == nil {
-		errors.New("codec cannot be nil")
+		return errors.New("codec cannot be nil")
 	}
 
 	return nil
