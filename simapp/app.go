@@ -5,6 +5,9 @@ import (
 	"os"
 	"path/filepath"
 
+	cctpkeeper "github.com/circlefin/noble-cctp/x/cctp/keeper"
+	ftfkeeper "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory/keeper"
+
 	"cosmossdk.io/core/appconfig"
 	"cosmossdk.io/depinject"
 	"cosmossdk.io/log"
@@ -26,17 +29,23 @@ import (
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
+	capabilitykeeper "github.com/cosmos/ibc-go/modules/capability/keeper"
+	transferkeeper "github.com/cosmos/ibc-go/v8/modules/apps/transfer/keeper"
+	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
+
+	_ "embed"
 
 	_ "cosmossdk.io/x/upgrade"
-	_ "embed"
+	_ "github.com/circlefin/noble-cctp/x/cctp"
+	_ "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory"
 	_ "github.com/cosmos/cosmos-sdk/x/auth"
 	_ "github.com/cosmos/cosmos-sdk/x/auth/tx/config"
 	_ "github.com/cosmos/cosmos-sdk/x/bank"
 	_ "github.com/cosmos/cosmos-sdk/x/consensus"
 	_ "github.com/cosmos/cosmos-sdk/x/params"
 	_ "github.com/cosmos/cosmos-sdk/x/staking"
+	_ "template.dev" // import for side effects
 
-	_ "template.dev"
 	templatekeeper "template.dev/keeper"
 )
 
@@ -67,6 +76,15 @@ type SimApp struct {
 	StakingKeeper   *stakingkeeper.Keeper
 	UpgradeKeeper   *upgradekeeper.Keeper
 
+	// IBC Modules
+	CapabilityKeeper *capabilitykeeper.Keeper
+	IBCKeeper        *ibckeeper.Keeper
+	TransferKeeper   transferkeeper.Keeper
+
+	// Circle Modules
+	CCTPKeeper *cctpkeeper.Keeper
+	FTFKeeper  *ftfkeeper.Keeper
+
 	// Custom Modules
 	TemplateKeeper *templatekeeper.Keeper
 }
@@ -87,9 +105,7 @@ func AppConfig() depinject.Config {
 		depinject.Supply(
 			// supply custom module basics
 			map[string]module.AppModuleBasic{
-				genutiltypes.ModuleName: genutil.NewAppModuleBasic(
-					genutiltypes.DefaultMessageValidator,
-				),
+				genutiltypes.ModuleName: genutil.NewAppModuleBasic(genutiltypes.DefaultMessageValidator),
 			},
 		),
 	)
@@ -122,7 +138,6 @@ func NewSimApp(
 		&app.legacyAmino,
 		&app.txConfig,
 		&app.interfaceRegistry,
-
 		// Cosmos Modules
 		&app.AccountKeeper,
 		&app.BankKeeper,
@@ -130,7 +145,9 @@ func NewSimApp(
 		&app.ParamsKeeper,
 		&app.StakingKeeper,
 		&app.UpgradeKeeper,
-
+		// Circle Modules
+		&app.CCTPKeeper,
+		&app.FTFKeeper,
 		// Custom Modules
 		&app.TemplateKeeper,
 	); err != nil {

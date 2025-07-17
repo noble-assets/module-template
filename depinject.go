@@ -27,6 +27,7 @@ import (
 	"cosmossdk.io/depinject"
 	"cosmossdk.io/log"
 	"github.com/cosmos/cosmos-sdk/codec"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	modulev1 "template.dev/api/module/v1"
 	"template.dev/keeper"
@@ -59,12 +60,18 @@ type ModuleOutputs struct {
 }
 
 func ProvideModule(in ModuleInputs) ModuleOutputs {
+	if in.Config.Authority == "" {
+		panic("authority for x/template module must be set")
+	}
+
+	authority := authtypes.NewModuleAddressOrBech32Address(in.Config.Authority)
+
 	k := keeper.NewKeeper(
 		in.Codec,
 		in.AddressCodec,
 		in.Logger,
 		in.StoreService,
-		in.Config.Authority,
+		authority.String(),
 	)
 	m := NewAppModule(k)
 

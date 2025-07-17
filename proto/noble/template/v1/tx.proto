@@ -17,9 +17,8 @@ service Msg {
   rpc Pause(MsgPause) returns (MsgPauseResponse);
 }
 
-
 // MsgPause pauses the module.
-message MsgPause{
+message MsgPause {
   option (cosmos.msg.v1.signer) = "signer";
   option (amino.name) = "template/Pause";
 

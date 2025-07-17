@@ -6,10 +6,26 @@ modules:
       pre_blockers: [upgrade]
       begin_blockers: [capability, staking, ibc]
       end_blockers: [staking]
-      init_genesis: [capability, auth, bank, staking, genutil, upgrade]
+      init_genesis:
+        [
+          capability,
+          transfer,
+          auth,
+          bank,
+          staking,
+          fiat-tokenfactory,
+          genutil,
+          ibc,
+          params,
+          upgrade,
+          cctp,
+          template,
+        ]
       override_store_keys:
         - module_name: auth
           kv_store_key: acc
+        - module_name: fiat-tokenfactory
+          kv_store_key: fiattokenfactory
   - name: auth
     config:
       '@type': cosmos.auth.module.v1.Module
@@ -20,7 +36,11 @@ modules:
           permissions: [burner, staking]
         - account: not_bonded_tokens_pool
           permissions: [burner, staking]
-        - account: template
+        - account: transfer
+          permissions: [burner, minter]
+        - account: fiat-tokenfactory
+          permissions: [burner, minter]
+        - account: cctp
   - name: bank
     config:
       '@type': cosmos.bank.module.v1.Module
@@ -44,9 +64,13 @@ modules:
   - name: upgrade
     config:
       '@type': cosmos.upgrade.module.v1.Module
-  # Custom module
+  - name: fiat-tokenfactory
+    config:
+      '@type': circle.fiattokenfactory.module.v1.Module
+  - name: cctp
+    config:
+      '@type': circle.cctp.module.v1.Module
   - name: template
     config:
       '@type': noble.template.module.v1.Module
-      # exchange flash debris claw calm shine laundry february cousin glad name miss jar neglect reflect blanket orbit clever educate rent inject lounge pupil plastic
-      authority: noble1h8tqx833l3t2s45mwxjz29r85dcevy93wk63za
+      authority: noble1zw7vatnx0vla7gzxucgypz0kfr6965akpvzw69

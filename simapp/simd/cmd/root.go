@@ -24,6 +24,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 	txmodule "github.com/cosmos/cosmos-sdk/x/auth/tx/config"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
+	"github.com/cosmos/ibc-go/modules/capability"
+	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
+	"github.com/cosmos/ibc-go/v8/modules/apps/transfer"
+	transfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
+	ibc "github.com/cosmos/ibc-go/v8/modules/core"
+	"github.com/cosmos/ibc-go/v8/modules/core/exported"
 	solomachine "github.com/cosmos/ibc-go/v8/modules/light-clients/06-solomachine"
 	tendermint "github.com/cosmos/ibc-go/v8/modules/light-clients/07-tendermint"
 
@@ -73,15 +79,13 @@ func NewRootCmd() *cobra.Command {
 
 			// sign mode textual is only available in online mode
 			if !clientCtx.Offline {
-				// This needs to go after ReadFromClientConfig, as that function ets the RPC client
-				// needed for SIGN_MODE_TEXTUAL.
+				// This needs to go after ReadFromClientConfig, as that function ets the RPC client needed for
+				// SIGN_MODE_TEXTUAL.
 				txConfigOpts.EnabledSignModes = append(
 					txConfigOpts.EnabledSignModes,
 					signing.SignMode_SIGN_MODE_TEXTUAL,
 				)
-				txConfigOpts.TextualCoinMetadataQueryFn = txmodule.NewGRPCCoinMetadataQueryFn(
-					clientCtx,
-				)
+				txConfigOpts.TextualCoinMetadataQueryFn = txmodule.NewGRPCCoinMetadataQueryFn(clientCtx)
 				txConfigWithTextual, err := tx.NewTxConfigWithOptions(
 					codec.NewProtoCodec(clientCtx.InterfaceRegistry),
 					txConfigOpts,
@@ -115,8 +119,11 @@ func NewRootCmd() *cobra.Command {
 	// manually register the modules on the client side.
 	// This needs to be removed after IBC supports App Wiring.
 	modules := map[string]appmodule.AppModule{
-		tendermint.ModuleName:  tendermint.AppModule{},
-		solomachine.ModuleName: solomachine.AppModule{},
+		capabilitytypes.ModuleName: capability.AppModule{},
+		exported.ModuleName:        ibc.AppModule{},
+		transfertypes.ModuleName:   transfer.AppModule{},
+		tendermint.ModuleName:      tendermint.AppModule{},
+		solomachine.ModuleName:     solomachine.AppModule{},
 	}
 	for name, mod := range modules {
 		moduleBasicManager[name] = module.CoreAppModuleBasicAdaptor(name, mod)
@@ -155,10 +162,7 @@ func ProvideClientContext(
 	return clientCtx
 }
 
-func ProvideKeyring(
-	clientCtx client.Context,
-	addressCodec address.Codec,
-) (clientv2keyring.Keyring, error) {
+func ProvideKeyring(clientCtx client.Context, addressCodec address.Codec) (clientv2keyring.Keyring, error) {
 	kb, err := client.NewKeyringFromBackend(clientCtx, clientCtx.Keyring.Backend())
 	if err != nil {
 		return nil, err

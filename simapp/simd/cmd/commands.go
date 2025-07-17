@@ -28,11 +28,7 @@ import (
 	"template.dev/simapp"
 )
 
-func initRootCmd(
-	rootCmd *cobra.Command,
-	txConfig client.TxConfig,
-	basicManager module.BasicManager,
-) {
+func initRootCmd(rootCmd *cobra.Command, txConfig client.TxConfig, basicManager module.BasicManager) {
 	cfg := sdk.GetConfig()
 	cfg.Seal()
 
@@ -44,15 +40,9 @@ func initRootCmd(
 		snapshot.Cmd(newApp),
 	)
 
-	server.AddCommands(
-		rootCmd,
-		simapp.DefaultNodeHome,
-		newApp,
-		appExport,
-		func(startCmd *cobra.Command) {
-			crisis.AddModuleInitFlags(startCmd)
-		},
-	)
+	server.AddCommands(rootCmd, simapp.DefaultNodeHome, newApp, appExport, func(startCmd *cobra.Command) {
+		crisis.AddModuleInitFlags(startCmd)
+	})
 
 	// add keybase, auxiliary RPC, query, genesis, and tx child commands
 	rootCmd.AddCommand(
@@ -110,6 +100,7 @@ func txCommand() *cobra.Command {
 	return cmd
 }
 
+// newApp is an appCreator
 func newApp(
 	logger log.Logger,
 	db dbm.DB,
