@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package noble.template.v1;
+
+import "amino/amino.proto";
+import "cosmos/query/v1/query.proto";
+import "google/api/annotations.proto";
+
+option go_package = "template.dev/types";
+
+// Query defines the gRPC query service for the template module.
+service Query {
+  // Status queries the module status.
+  rpc Status(QueryStatus) returns (QueryStatusResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
+    option (google.api.http).get = "/template/v1/status";
+  }
+}
+
+// QueryStatus is the request type for the Query/Status RPC method.
+message QueryStatus{ }
+
+// QueryStatusResponse is the response type for the Query/Status RPC method.
+message QueryStatusResponse {
+  // Whether the module is paused.
+  bool is_paused = 3 [(amino.dont_omitempty) = true];
+}

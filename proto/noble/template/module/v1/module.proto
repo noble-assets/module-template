@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package noble.template.module.v1;
+
+import "cosmos/app/v1alpha1/module.proto";
+
+// Module is the configuration object for the Cosmos SDK x/template.
+message Module {
+  option (cosmos.app.v1alpha1.module) = {go_import: "template.dev"};
+
+  // authority defines the template module authority.
+  string authority = 1;
+}
