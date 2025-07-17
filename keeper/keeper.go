@@ -96,3 +96,7 @@ func (k *Keeper) Validate() error {
 
 	return nil
 }
+
+func (k *Keeper) Authority() string {
+	return k.authority
+}
