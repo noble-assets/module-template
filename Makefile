@@ -1,4 +1,4 @@
-.PHONY: proto-format proto-lint proto-gen
+.PHONY: proto-format proto-lint proto-gen license
 #=============================================================================#
 #                                  Protobuf                                   #
 #=============================================================================#
@@ -28,3 +28,15 @@ proto-lint:
 	@docker run --rm --volume "$(PWD)":/workspace --workdir /workspace \
 		bufbuild/buf:$(BUF_VERSION) lint
 	@echo "Completed protobuf linting!"
+
+
+#=============================================================================#
+#                                 Tooling                                     #
+#=============================================================================#
+
+FILES := $(shell find . -name "*.go" -not -path "./simapp/*" -not -name "*.pb.go" -not -name "*.pb.gw.go" -not -name "*.pulsar.go")
+license:
+	@echo "==================================================================="
+	@echo "Adding license to files..."
+	@go-license --config .github/license.yaml $(FILES)
+	@echo "Completed license addition!"
