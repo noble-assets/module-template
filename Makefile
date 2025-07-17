@@ -1,5 +1,15 @@
-.PHONY: proto-format proto-lint proto-gen license
-all: proto-all format lint license
+.PHONY: proto-format proto-lint proto-gen license build
+all: proto-all format lint license build
+
+#=============================================================================#
+#                                  Build                                      #
+#=============================================================================#
+
+build:
+	@echo "==================================================================="
+	@echo "Building simd..."
+	@cd simapp && GOWORK=off make build 1> /dev/null
+	@echo "Completed build!"
 
 #=============================================================================#
 #                                  Protobuf                                   #
