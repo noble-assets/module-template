@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package noble.template.v1;
+
+import "amino/amino.proto";
+import "cosmos/msg/v1/msg.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "template.dev/types";
+
+// Msg defines the RPC methods for the template module.
+service Msg {
+  option (cosmos.msg.v1.service) = true;
+
+  // PauseProtocol pauses an entire template modulw.
+  rpc Pause(MsgPause) returns (MsgPauseResponse);
+}
+
+// MsgPause pauses the module.
+message MsgPause {
+  option (cosmos.msg.v1.signer) = "signer";
+  option (amino.name) = "template/Pause";
+
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  // Address of the signer who is requesting to pause the module.
+  string signer = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+// MsgPauseResponse is the response type from a MsgPause request.
+message MsgPauseResponse {}

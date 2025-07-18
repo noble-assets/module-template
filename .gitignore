@@ -1,0 +1,7 @@
+.template
+.claude
+.idea
+build
+go.work.sum
+coverage.out
+heighliner**

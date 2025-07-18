@@ -1,0 +1,5 @@
+syntax = "proto3";
+
+package noble.template.v1;
+
+option go_package = "template.dev/types";
