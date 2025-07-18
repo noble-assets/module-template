@@ -79,7 +79,7 @@ func NewRootCmd() *cobra.Command {
 
 			// sign mode textual is only available in online mode
 			if !clientCtx.Offline {
-				// This needs to go after ReadFromClientConfig, as that function ets the RPC client
+				// This needs to go after ReadFromClientConfig, as that function set the RPC client
 				// needed for
 				// SIGN_MODE_TEXTUAL.
 				txConfigOpts.EnabledSignModes = append(
