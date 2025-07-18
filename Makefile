@@ -1,5 +1,5 @@
 .PHONY: proto-format proto-lint proto-gen license build
-all: proto-all format lint license build
+all: proto-all format lint license test-unit build
 
 #=============================================================================#
 #                                  Build                                      #
@@ -64,3 +64,27 @@ lint:
 	@echo "Running linter..."
 	@go tool golangci-lint run -c ./.golangci.yaml
 	@echo "Completed linting!"
+
+#=============================================================================#
+#                                    Test                                     #
+#=============================================================================#
+
+test-unit:
+	@echo "==================================================================="
+	@echo "Running unit tests for keeper package..."
+	@go test -cover -coverpkg=./keeper/... -coverprofile=coverage.out -race -v ./keeper/...
+	@go tool cover -html=coverage.out && go tool cover -func=coverage.out
+	@echo "Running unit tests for types package..."
+	@go test -v ./types/...
+
+local-image:
+	@echo "==================================================================="
+	@echo "Building image..."
+	@heighliner build --chain orbiter-simd --file e2e/chains.yaml --local 1> /dev/null
+	@echo "Completed build!"
+
+test-e2e:
+	@echo "==================================================================="
+	@echo "Running e2e tests..."
+	@cd e2e && go test -timeout 15m -race -v ./...
+	@echo "Completed e2e tests!"
