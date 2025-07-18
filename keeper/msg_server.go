@@ -28,14 +28,18 @@ import (
 
 var _ types.MsgServer = &msgServer{}
 
+// msgServer exposes the module keeper for state transitions.
 type msgServer struct {
 	*Keeper
 }
 
+// NewMsgServer returns a reference to the message server.
 func NewMsgServer(keeper *Keeper) types.MsgServer {
 	return msgServer{Keeper: keeper}
 }
 
+// CheckIsAuthority returns an error is the signer is not the
+// keeper authority.
 func (m msgServer) CheckIsAuthority(signer string) error {
 	if m.Authority() != signer {
 		return types.ErrUnauthorized

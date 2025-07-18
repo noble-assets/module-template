@@ -18,6 +18,16 @@
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT, AND
 // TITLE.
 
-package types
+package keeper
 
-const ModuleName = "template"
+import (
+	"context"
+
+	"template.dev/types"
+)
+
+func (k *Keeper) InitGenesis(_ context.Context, _ types.GenesisState) {}
+
+func (k *Keeper) ExportGenesis(_ context.Context) *types.GenesisState {
+	return types.DefaultGenesisState()
+}

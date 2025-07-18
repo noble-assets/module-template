@@ -28,10 +28,13 @@ import (
 
 var _ types.QueryServer = &queryServer{}
 
+// queryServer exposes the module keeper for state queries.
 type queryServer struct {
 	*Keeper
 }
 
+// NewQueryServer returns a reference to the module
+// query server.
 func NewQueryServer(keeper *Keeper) types.QueryServer {
 	return queryServer{Keeper: keeper}
 }

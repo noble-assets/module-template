@@ -51,21 +51,9 @@ func NewKeeper(
 	storeService store.KVStoreService,
 	authority string,
 ) *Keeper {
-	if addressCdc == nil {
-		panic("address codec cannot be nil")
+	if err := validateKeeperInputs(cdc, addressCdc, logger, storeService, authority); err != nil {
+		panic(err)
 	}
-	if logger == nil {
-		panic("logger cannot be nil")
-	}
-	if storeService == nil {
-		panic("store service cannot be nil")
-	}
-
-	_, err := addressCdc.StringToBytes(authority)
-	if err != nil {
-		panic("authority for x/orbiter module is not valid")
-	}
-
 	sb := collections.NewSchemaBuilder(storeService)
 
 	k := Keeper{
@@ -85,6 +73,34 @@ func NewKeeper(
 	return &k
 }
 
+// validateKeeperInputs check that all Keeper inputs
+// are valid or panic.
+func validateKeeperInputs(
+	cdc codec.Codec,
+	addressCdc address.Codec,
+	logger log.Logger,
+	storeService store.KVStoreService,
+	authority string,
+) error {
+	if addressCdc == nil {
+		return errors.New("address codec cannot be nil")
+	}
+	if logger == nil {
+		return errors.New("logger cannot be nil")
+	}
+	if storeService == nil {
+		return errors.New("store service cannot be nil")
+	}
+	if addressCdc == nil {
+		return errors.New("address codec cannot be nil")
+	}
+	_, err := addressCdc.StringToBytes(authority)
+	if err != nil {
+		return errors.New("authority for x/template module is not valid")
+	}
+	return nil
+}
+
 // Validate returns an error if any of the keeper fields is not valid.
 func (k *Keeper) Validate() error {
 	if k.logger == nil {
@@ -97,6 +113,7 @@ func (k *Keeper) Validate() error {
 	return nil
 }
 
+// Authority returns the keeper authority.
 func (k *Keeper) Authority() string {
 	return k.authority
 }

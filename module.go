@@ -21,17 +21,23 @@
 package template
 
 import (
+	"encoding/json"
+	"fmt"
+
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 
 	"cosmossdk.io/core/appmodule"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 
 	"template.dev/keeper"
 	"template.dev/types"
 )
+
+const ConsensusVersion = 1
 
 var _ module.AppModuleBasic = AppModuleBasic{}
 
@@ -39,6 +45,7 @@ var (
 	_ module.AppModuleBasic      = AppModule{}
 	_ appmodule.AppModule        = AppModule{}
 	_ module.HasConsensusVersion = AppModule{}
+	_ module.HasGenesis          = AppModule{}
 	_ module.HasServices         = AppModule{}
 )
 
@@ -81,5 +88,34 @@ func (a AppModule) IsAppModule() {}
 func (a AppModule) IsOnePerModuleType() {}
 
 func (a AppModule) ConsensusVersion() uint64 {
-	return types.ConsensusVersion
+	return ConsensusVersion
+}
+
+func (AppModuleBasic) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
+	return cdc.MustMarshalJSON(types.DefaultGenesisState())
+}
+
+func (AppModuleBasic) ValidateGenesis(
+	cdc codec.JSONCodec,
+	_ client.TxEncodingConfig,
+	bz json.RawMessage,
+) error {
+	var genesis types.GenesisState
+	if err := cdc.UnmarshalJSON(bz, &genesis); err != nil {
+		return fmt.Errorf("failed to unmarshal x/%s genesis state: %w", types.ModuleName, err)
+	}
+
+	return genesis.Validate()
+}
+
+func (m AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, bz json.RawMessage) {
+	var genesis types.GenesisState
+	cdc.MustUnmarshalJSON(bz, &genesis)
+
+	m.keeper.InitGenesis(ctx, genesis)
+}
+
+func (m AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.RawMessage {
+	genesis := m.keeper.ExportGenesis(ctx)
+	return cdc.MustMarshalJSON(genesis)
 }
